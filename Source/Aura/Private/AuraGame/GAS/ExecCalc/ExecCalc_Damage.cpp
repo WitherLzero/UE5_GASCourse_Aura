@@ -52,18 +52,29 @@ struct RPGDamageStatic
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UCombatAttributeSet, LightningResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UCombatAttributeSet, ArcaneResistance, Target, false);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UCombatAttributeSet, PhysicalResistance, Target, false);
-		
-		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, FireResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, LightningResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane, ArcaneResistanceDef);
-		TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, PhysicalResistanceDef);
 	}
 };
 
-static const RPGDamageStatic DamageStatics()
+static const RPGDamageStatic& DamageStatics()
 {
 	static RPGDamageStatic DStatics;
+
+	// Lazy init: TagsToCaptureDefs must be populated at runtime (not during CDO creation),
+	// because FAuraGameplayTags aren't initialized yet at that point.
+	if (DStatics.TagsToCaptureDefs.IsEmpty())
+	{
+		const FAuraGameplayTags& Tags = FAuraGameplayTags::Get();
+		if (Tags.Attributes_Resistance_Fire.IsValid())
+		{
+			DStatics.TagsToCaptureDefs.Reserve(4);
+			DStatics.TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Fire, DStatics.FireResistanceDef);
+			DStatics.TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Lightning, DStatics.LightningResistanceDef);
+			DStatics.TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Arcane, DStatics.ArcaneResistanceDef);
+			DStatics.TagsToCaptureDefs.Add(Tags.Attributes_Resistance_Physical, DStatics.PhysicalResistanceDef);
+		}
+		// If Tags aren't ready yet, map stays empty — will retry next call.
+	}
+
 	return DStatics;
 }
 
@@ -104,7 +115,7 @@ void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParam
 			const float SourceDebuffChance = Spec.GetSetByCallerMagnitude(RPGGameplayTags.Debuff_Chance, false, -1.f);
 
 			float TargetDebuffResistance = 0.f;
-			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(RPGDamageStatic().TagsToCaptureDefs[ResistanceTag], EvaluationParameters, TargetDebuffResistance);
+			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().TagsToCaptureDefs[ResistanceTag], EvaluationParameters, TargetDebuffResistance);
 			TargetDebuffResistance = FMath::Max<float>(TargetDebuffResistance, 0.f);
 			
 			
@@ -157,13 +168,13 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	for (const auto& Pair : FAuraGameplayTags::Get().DamageTypesToResistances )
 	{
 		const FGameplayTag ResistanceTag = Pair.Value;
-		checkf(RPGDamageStatic().TagsToCaptureDefs.Contains(ResistanceTag), TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"), *ResistanceTag.ToString());
-		const FGameplayEffectAttributeCaptureDefinition CaptureDef = RPGDamageStatic().TagsToCaptureDefs[ResistanceTag];
+		const FGameplayEffectAttributeCaptureDefinition* CaptureDef = DamageStatics().TagsToCaptureDefs.Find(ResistanceTag);
+		checkf(CaptureDef, TEXT("TagsToCaptureDefs doesn't contain Tag: [%s] in ExecCalc_Damage"), *ResistanceTag.ToString());
 		
 		float DamageTypeValue = Spec.GetSetByCallerMagnitude(Pair.Key, false);
 		
 		float Resistance = 0.f;
-		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(CaptureDef, EvaluationParameters, Resistance);
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(*CaptureDef, EvaluationParameters, Resistance);
 		Resistance = FMath::Clamp(Resistance, 0.f, 100.f);
 		
 		DamageTypeValue *= ( 100.f - Resistance ) / 100.f;

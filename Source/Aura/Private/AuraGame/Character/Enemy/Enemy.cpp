@@ -21,7 +21,7 @@
 
 AEnemy::AEnemy()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility,ECR_Block);
 	
 	AbilitySystemComponent = CreateDefaultSubobject<URPGAbilitySystemComponent>("AbilitySystemComponent");
@@ -71,11 +71,6 @@ void AEnemy::BeginPlay()
 			OnMaxHealthChanged.Broadcast(VitalAS->GetMaxHealth());
 		}
 	});
-}
-
-void AEnemy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 

@@ -24,7 +24,6 @@ class AURA_API AEnemy : public AAuraCharacterBase, public IEnemyInterface
 
 public:
 	AEnemy();
-	virtual void Tick(float DeltaTime) override;
 	
 	UPROPERTY(BlueprintAssignable, Category="GAS | Attributes")
 	FOnAttributeChanged OnHealthChanged;
