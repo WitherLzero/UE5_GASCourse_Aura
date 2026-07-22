@@ -78,4 +78,7 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
+
+	/** 上一次被 OnNativeInput 消费掉（return true）的 Pressed 事件对应的 InputTag */
+	FGameplayTag ConsumedInputTag;
 };

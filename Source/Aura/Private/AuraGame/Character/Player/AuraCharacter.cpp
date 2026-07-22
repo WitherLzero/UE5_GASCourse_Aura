@@ -105,6 +105,26 @@ bool AAuraCharacter::HandleNativeInput(FGameplayTag Tag, ERPGInputEvent EventTyp
 
 bool AAuraCharacter::OnNativeInput_Implementation(FGameplayTag Tag, ERPGInputEvent EventType, FInputActionValue Value)
 {
+	// ====== 输入消费保护：拦截被消费的 Pressed 后续同帧/跨帧 Held ======
+	if (ConsumedInputTag.IsValid())
+	{
+		if (Tag == ConsumedInputTag)
+		{
+			if (EventType == ERPGInputEvent::IE_Held)
+			{
+				return true; // 持续拦截直到按键释放
+			}
+			if (EventType == ERPGInputEvent::IE_Released)
+			{
+				ConsumedInputTag = FGameplayTag(); // 释放后解除
+			}
+		}
+		else
+		{
+			ConsumedInputTag = FGameplayTag(); // 其他按键按下 → 安全解除
+		}
+	}
+	
 	// ====== 核心拦截层：检查瞄准微状态 ======
 	if (AbilitySystemComponent && AbilitySystemComponent->HasMatchingGameplayTag(FRPGGameplayTags::Get().State_Action_Targeting))
 	{
@@ -112,6 +132,7 @@ bool AAuraCharacter::OnNativeInput_Implementation(FGameplayTag Tag, ERPGInputEve
 		if (Tag == FRPGGameplayTags::Get().Inputs_LMB && EventType == ERPGInputEvent::IE_Pressed)
 		{
 			AbilitySystemComponent->LocalInputConfirm();
+			ConsumedInputTag = Tag;
 			return true; 
 		}
 		
@@ -119,6 +140,7 @@ bool AAuraCharacter::OnNativeInput_Implementation(FGameplayTag Tag, ERPGInputEve
 		if (Tag == FRPGGameplayTags::Get().Inputs_RMB && EventType == ERPGInputEvent::IE_Pressed)
 		{
 			AbilitySystemComponent->LocalInputCancel();
+			ConsumedInputTag = Tag;
 			return true; 
 		}
 	}
