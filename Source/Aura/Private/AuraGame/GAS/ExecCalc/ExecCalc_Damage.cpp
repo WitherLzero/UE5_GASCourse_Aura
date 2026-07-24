@@ -3,6 +3,7 @@
 
 #include "AuraGame/GAS/ExecCalc/ExecCalc_Damage.h"
 
+#include "AuraGame/Stats/AuraStats.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayEffectExecutionCalculation.h"
 #include "AuraGame/GAS/AuraAbilitySystemLibrary.h"
@@ -144,6 +145,7 @@ void UExecCalc_Damage::DetermineDebuff(const FGameplayEffectCustomExecutionParam
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
+	SCOPE_CYCLE_COUNTER(STAT_ExecCalcDamage);
 	UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
 	UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
 	

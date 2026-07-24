@@ -5,6 +5,7 @@
 
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
+#include "AuraGame/Stats/AuraStats.h"
 #include "AuraGame/Types/AuraGameplayTags.h"
 #include "RPGFramework/Types/RPGGameplayTags.h"
 #include "RPGFramework/GAS/RPGAbilitySystemComponent.h"
@@ -85,6 +86,7 @@ void AAuraCharacter::AddToXP_Implementation(int32 InXP)
 
 void AAuraCharacter::Tick(float DeltaTime)
 {
+	SCOPE_CYCLE_COUNTER(STAT_AuraCharacterTick);
 	Super::Tick(DeltaTime);
 	AutoRun();
 
@@ -105,6 +107,7 @@ bool AAuraCharacter::HandleNativeInput(FGameplayTag Tag, ERPGInputEvent EventTyp
 
 bool AAuraCharacter::OnNativeInput_Implementation(FGameplayTag Tag, ERPGInputEvent EventType, FInputActionValue Value)
 {
+	SCOPE_CYCLE_COUNTER(STAT_OnNativeInput);
 	// ====== 输入消费保护：拦截被消费的 Pressed 后续同帧/跨帧 Held ======
 	if (ConsumedInputTag.IsValid())
 	{
@@ -231,6 +234,7 @@ void AAuraCharacter::Move(const FVector2D& InputAxis)
 
 bool AAuraCharacter::HoldToMove()
 {
+	SCOPE_CYCLE_COUNTER(STAT_HoldToMove);
 	if (!bTargeting)
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
@@ -249,6 +253,7 @@ bool AAuraCharacter::HoldToMove()
 
 bool AAuraCharacter::SetupNavPoints()
 {
+	SCOPE_CYCLE_COUNTER(STAT_SetupNavPoints);
 	if (!bTargeting)
 	{
 		if (FollowTime <= ShortPressThreshold)
@@ -277,6 +282,7 @@ bool AAuraCharacter::SetupNavPoints()
 
 void AAuraCharacter::AutoRun()
 {
+	SCOPE_CYCLE_COUNTER(STAT_AutoRun);
 	if (bAutoRunning)
 	{
 		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(GetActorLocation(), ESplineCoordinateSpace::World);
