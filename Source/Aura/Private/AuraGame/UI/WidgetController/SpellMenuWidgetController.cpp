@@ -27,10 +27,10 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 				bool bEnableSpendPoints = false;
 				bool bEnableEquip = false;
 				ShouldEnableButtons(CurrentSpellPoints, StatusTag, bEnableSpendPoints, bEnableEquip);
-				FString Description;
-				FString NextLevelDescription;
-				GetASC()->GetDescriptionsByAbilityTag(AbilityTag, Description, NextLevelDescription);
-				OnSpellGlobeSelected.Broadcast(bEnableSpendPoints, bEnableEquip, Description, NextLevelDescription);
+			FText Description;
+			FText NextLevelDescription;
+			GetASC()->GetDescriptionsByAbilityTag(AbilityTag, Description, NextLevelDescription);
+			OnSpellGlobeSelected.Broadcast(bEnableSpendPoints, bEnableEquip, Description, NextLevelDescription);
 			}
 			
 			if (AbilityInfo)
@@ -52,8 +52,8 @@ void USpellMenuWidgetController::BindCallbacksToDependencies()
 			bool bEnableSpendPoints = false;
 			bool bEnableEquip = false;
 			ShouldEnableButtons(CurrentSpellPoints, SelectedAbility.Status, bEnableSpendPoints, bEnableEquip);
-			FString Description;
-			FString NextLevelDescription;
+			FText Description;
+			FText NextLevelDescription;
 			GetASC()->GetDescriptionsByAbilityTag(SelectedAbility.Ability, Description, NextLevelDescription);
 			OnSpellGlobeSelected.Broadcast(bEnableSpendPoints, bEnableEquip, Description, NextLevelDescription);
 		});
@@ -90,8 +90,8 @@ void USpellMenuWidgetController::SpellGlobeSelected(const FGameplayTag& AbilityT
 	bool bEnableSpendPoints = false;
 	bool bEnableEquip = false;
 	ShouldEnableButtons(SpellPoints, AbilityStatus, bEnableSpendPoints, bEnableEquip);
-	FString Description;
-	FString NextLevelDescription;
+	FText Description;
+	FText NextLevelDescription;
 	GetASC()->GetDescriptionsByAbilityTag(AbilityTag, Description, NextLevelDescription);
 	OnSpellGlobeSelected.Broadcast(bEnableSpendPoints, bEnableEquip, Description, NextLevelDescription);	
 }
@@ -108,7 +108,7 @@ void USpellMenuWidgetController::SpellGlobeDeselected()
 	SelectedAbility.Ability = FRPGGameplayTags::Get().Abilities_None;
 	SelectedAbility.Status = FRPGGameplayTags::Get().Abilities_Status_Locked;
 	
-	OnSpellGlobeSelected.Broadcast(false, false, FString(), FString());	
+	OnSpellGlobeSelected.Broadcast(false, false, FText(), FText());	
 	
 }
 

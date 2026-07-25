@@ -5,93 +5,70 @@
 
 #include "AuraGame/Types/AuraGameplayTags.h"
 
-FString UAuraArcaneShards::GetDescription(int32 Level)
+FText UAuraArcaneShards::GetDescription(int32 Level)
 {
 	const int32 ScaledDamage = GetDamageByDamageType(Level, FAuraGameplayTags::Get().Damage_Arcane);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
+
+	FNumberFormattingOptions FloatOpts;
+	FloatOpts.MinimumFractionalDigits = 1;
+	FloatOpts.MaximumFractionalDigits = 1;
+
 	if (Level == 1)
 	{
-		return FString::Printf(TEXT(
-			// Title
+		return FText::Format(INVTEXT(
 			"<Title>ARCANE SHARDS</>\n\n"
-
-			// Level
-			"<Small>Level: </><Level>%d</>\n"
-			// ManaCost
-			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-			// Cooldown
-			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
-
+			"<Small>Level: </><Level>{0}</>\n"
+			"<Small>ManaCost: </><ManaCost>{1}</>\n"
+			"<Small>Cooldown: </><Cooldown>{2}</>\n\n"
 			"<Default>Summon a shard of arcane energy, "
 			"causing radial arcane damage of </>"
-
-			// Damage
-			"<Damage>%d</><Default> at the shard origin.</>"),
-
-			// Values
-			Level,
-			ManaCost,
-			Cooldown,
-			ScaledDamage);
+			"<Damage>{3}</><Default> at the shard origin.</>"),
+			FText::AsNumber(Level),
+			FText::AsNumber(ManaCost, &FloatOpts),
+			FText::AsNumber(Cooldown, &FloatOpts),
+			FText::AsNumber(ScaledDamage));
 	}
 	else
 	{
-		return FString::Printf(TEXT(
-			// Title
+		return FText::Format(INVTEXT(
 			"<Title>ARCANE SHARDS</>\n\n"
-
-			// Level
-			"<Small>Level: </><Level>%d</>\n"
-			// ManaCost
-			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-			// Cooldown
-			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
-
-			// Number of Shards
-			"<Default>Summon %d shards of arcane energy, "
+			"<Small>Level: </><Level>{0}</>\n"
+			"<Small>ManaCost: </><ManaCost>{1}</>\n"
+			"<Small>Cooldown: </><Cooldown>{2}</>\n\n"
+			"<Default>Summon {3} shards of arcane energy, "
 			"causing radial arcane damage of </>"
-
-			// Damage
-			"<Damage>%d</><Default> at the shard origins.</>"),
-
-			// Values
-			Level,
-			ManaCost,
-			Cooldown,
-			FMath::Min(Level, MaxNumShards),
-			ScaledDamage);
+			"<Damage>{4}</><Default> at the shard origins.</>"),
+			FText::AsNumber(Level),
+			FText::AsNumber(ManaCost, &FloatOpts),
+			FText::AsNumber(Cooldown, &FloatOpts),
+			FText::AsNumber(FMath::Min(Level, MaxNumShards)),
+			FText::AsNumber(ScaledDamage));
 	}
 }
 
-FString UAuraArcaneShards::GetNextLevelDescription(int32 Level)
+FText UAuraArcaneShards::GetNextLevelDescription(int32 Level)
 {
 	const int32 ScaledDamage = GetDamageByDamageType(Level, FAuraGameplayTags::Get().Damage_Arcane);
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float Cooldown = GetCooldown(Level);
 
-	return FString::Printf(TEXT(
-			// Title
+	FNumberFormattingOptions FloatOpts;
+	FloatOpts.MinimumFractionalDigits = 1;
+	FloatOpts.MaximumFractionalDigits = 1;
+
+	return FText::Format(INVTEXT(
 			"<Title>NEXT LEVEL: </>\n\n"
-
-			// Level
-			"<Small>Level: </><Level>%d</>\n"
-			// ManaCost
-			"<Small>ManaCost: </><ManaCost>%.1f</>\n"
-			// Cooldown
-			"<Small>Cooldown: </><Cooldown>%.1f</>\n\n"
-
-			// Number of Shards
-			"<Default>Summon %d shards of arcane energy, "
+			"<Small>Level: </><Level>{0}</>\n"
+			"<Small>ManaCost: </><ManaCost>{1}</>\n"
+			"<Small>Cooldown: </><Cooldown>{2}</>\n\n"
+			"<Default>Summon {3} shards of arcane energy, "
 			"causing radial arcane damage of </>"
-
-			// Damage
-			"<Damage>%d</><Default> at the shard origins.</>"),
-
-			// Values
-			Level,
-			ManaCost,
-			Cooldown,
-			FMath::Min(Level, MaxNumShards),
-			ScaledDamage);
+			"<Damage>{4}</><Default> at the shard origins.</>"),
+			FText::AsNumber(Level),
+			FText::AsNumber(ManaCost, &FloatOpts),
+			FText::AsNumber(Cooldown, &FloatOpts),
+			FText::AsNumber(FMath::Min(Level, MaxNumShards)),
+			FText::AsNumber(ScaledDamage));
 }

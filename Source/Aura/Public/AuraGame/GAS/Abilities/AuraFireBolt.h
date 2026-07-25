@@ -14,8 +14,8 @@ class AURA_API UAuraFireBolt : public URPGProjectileSpell
 {
 	GENERATED_BODY()
 public:
-	virtual FString GetDescription(int32 Level) override;
-	virtual FString GetNextLevelDescription(int32 Level) override;
+	virtual FText GetDescription(int32 Level) override;
+	virtual FText GetNextLevelDescription(int32 Level) override;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FireBolt")
 	float ProjectileSpread = 90.f;

@@ -14,6 +14,6 @@ class AURA_API UAuraElectrocute : public URPGBeamSpell
 {
 	GENERATED_BODY()
 public:
-	virtual FString GetDescription(int32 Level) override;
-	virtual FString GetNextLevelDescription(int32 Level) override;
+	virtual FText GetDescription(int32 Level) override;
+	virtual FText GetNextLevelDescription(int32 Level) override;
 };

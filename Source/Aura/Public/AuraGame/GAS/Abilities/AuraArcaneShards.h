@@ -14,8 +14,8 @@ class AURA_API UAuraArcaneShards : public UDamageGameplayAbility
 {
 	GENERATED_BODY()
 public:
-	virtual FString GetDescription(int32 Level) override;
-	virtual FString GetNextLevelDescription(int32 Level) override;
+	virtual FText GetDescription(int32 Level) override;
+	virtual FText GetNextLevelDescription(int32 Level) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 MaxNumShards = 4;
